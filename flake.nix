@@ -1,8 +1,9 @@
 {
-  description = "Ardees";
+  description = "African Journey Workflows";
 
   inputs.devshell.url = "github:numtide/devshell";
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   inputs.flake-compat = {
     url = "github:edolstra/flake-compat";
@@ -20,13 +21,7 @@
           config.permittedInsecurePackages = [ ];
         };
       in pkgs.devshell.mkShell {
-        name = "ardees.dev";
-        commands = [{
-          name = "devspace";
-          category = "devshell";
-          help = "Opens dev workspace";
-          command = "zellij -l layout.kdl";
-        }];
+        name = "african-journey-workflows.dev";
         packages = [
           pkgs.pkg-config
           pkgs.gcc
@@ -34,7 +29,7 @@
           pkgs.gnumake
           pkgs.python313
           pkgs.libyaml.dev
-          pkgs.openssl_3_2.dev
+          pkgs.openssl_3_4.dev
           pkgs.postgresql_16.dev
           pkgs.autoconf269
           pkgs.automake
@@ -48,7 +43,7 @@
           {
             name = "PKG_CONFIG_PATH";
             value =
-              "${pkgs.pkg-config}:${pkgs.openssl_3_2.dev}/lib/pkgconfig:${pkgs.libyaml.dev}/lib/pkgconfig:${pkgs.postgresql_16.dev}/lib/pkgconfig:${pkgs.libffi.dev}/lib/pkgconfig:${pkgs.secp256k1}/lib/pkgconfig";
+              "${pkgs.pkg-config}:${pkgs.openssl_3_4.dev}/lib/pkgconfig:${pkgs.libyaml.dev}/lib/pkgconfig:${pkgs.postgresql_16.dev}/lib/pkgconfig:${pkgs.libffi.dev}/lib/pkgconfig:${pkgs.secp256k1}/lib/pkgconfig";
           }
           {
             name = "LIBTOOL";
@@ -57,6 +52,14 @@
           {
             name = "NIXPKGS_ALLOW_INSECURE";
             value = "1";
+          }
+        ];
+        commands = [
+          {
+            name = "run";
+            category = "devshell";
+            help = "Run the application";
+            command = "pnpm run dev";
           }
         ];
       };

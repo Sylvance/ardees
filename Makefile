@@ -3,6 +3,7 @@ BOLD := $(shell tput bold)
 NORMAL := $(shell tput sgr0)
 GREEN := $(shell tput setaf 2)
 RED := $(shell tput setaf 1)
+YELLOW := $(shell tput setaf 3)
 
 PYTHON_VERSION = 3.12
 
@@ -23,6 +24,18 @@ help:
 	@echo "$(GREEN)make shell$(NORMAL)           - Start a Poetry shell"
 	@echo "$(GREEN)make notebooks$(NORMAL)       - Start JupyterLab"
 	@echo "$(GREEN)make recreate$(NORMAL)        - Recreate virtual environment"
+	@echo "$(GREEN)make run$(NORMAL)             - Run the main application"
+	@echo "$(GREEN)make run MODULE=<module>$(NORMAL) - Run a specific module"
+	@echo "$(GREEN)make run SCRIPT=<script>$(NORMAL) - Run a specific script"
+	@echo ""
+	@echo "$(BOLD)Examples:$(NORMAL)"
+	@echo "$(YELLOW)make run$(NORMAL)                              - Run main application"
+	@echo "$(YELLOW)make run MODULE=data.make_dataset$(NORMAL)     - Run data processing module"
+	@echo "$(YELLOW)make run MODULE=models.train_model$(NORMAL)    - Run model training module"
+	@echo "$(YELLOW)make run SCRIPT=scripts/analysis.py$(NORMAL)   - Run specific script file"
+	@echo "$(YELLOW)make run.data$(NORMAL)                         - Quick data processing"
+	@echo "$(YELLOW)make run.model$(NORMAL)                        - Quick model training"
+	@echo "$(YELLOW)make format && make test && make run$(NORMAL)  - Format, test, then run"
 
 install:
 	@echo "$(BOLD)Setting up Python $(PYTHON_VERSION) environment...$(NORMAL)"
@@ -103,3 +116,37 @@ setup: clean
 	touch src/{data,features,models,visualization}/__init__.py
 	touch src/__init__.py
 	@echo "$(GREEN)Project structure created successfully!$(NORMAL)"
+
+# Run commands - choose the approach that fits your needs
+run:
+ifdef MODULE
+	@echo "$(BOLD)Running module: $(MODULE)$(NORMAL)"
+	poetry run python -m src.$(MODULE)
+else ifdef SCRIPT
+	@echo "$(BOLD)Running script: $(SCRIPT)$(NORMAL)"
+	poetry run python $(SCRIPT)
+else
+	@echo "$(BOLD)Running main application...$(NORMAL)"
+	poetry run python -m src.main
+endif
+
+# Alternative: Specific run targets for common tasks
+run.data:
+	@echo "$(BOLD)Running data processing...$(NORMAL)"
+	poetry run python -m src.data.make_dataset
+
+run.features:
+	@echo "$(BOLD)Running feature engineering...$(NORMAL)"
+	poetry run python -m src.features.build_features
+
+run.model:
+	@echo "$(BOLD)Running model training...$(NORMAL)"
+	poetry run python -m src.models.train_model
+
+run.predict:
+	@echo "$(BOLD)Running predictions...$(NORMAL)"
+	poetry run python -m src.models.predict_model
+
+run.viz:
+	@echo "$(BOLD)Running visualization...$(NORMAL)"
+	poetry run python -m src.visualization.visualize
